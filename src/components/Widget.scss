@@ -1,0 +1,107 @@
+@import '../styles/vars';
+
+
+.Widget {
+  $color-current: $color-text-mid;
+  $color-selected: $color-focus;
+  $color-hover: $color-focus;
+
+  border: 1px solid $color-line-mid;
+  border-radius: 3px;
+  box-shadow: 0 0 10px rgba(0,0,0,.3);
+  max-width: 320px;
+  &-body {
+    display: grid;
+    grid-template-columns: repeat(7, 1fr);
+    grid-column-start: div 3;
+    grid-gap: 5px;
+    justify-items: center;
+    padding: 20px;
+  }
+  &-day {
+    display: flex;
+    cursor: pointer;
+    justify-content: center;
+    align-items: center;
+    text-align: center;
+    border-radius: 32px;
+    width: 32px;
+    height: 32px;
+    border: 2px solid transparent;
+
+    &:hover {
+      border-color: $color-hover;
+      color: $color-hover;
+    }
+    &--current {
+      border-color: $color-current;
+    }
+    &--selected {
+      color: #fff;
+      background: $color-selected;
+      &:hover {
+        color: #fff;
+      }
+    }
+
+  }
+
+
+  .select {
+    position: relative;
+    border: 1px solid $color-line-mid;
+    border-radius: 5px;
+    &-label {
+      padding: 8px 10px;   
+    }
+    &-arrow {
+      position: absolute;
+      font-size: 20px;
+      right: 5px;
+      top: 50%;
+      transform: translateY(-50%) translateY(-2px);
+    }
+    & select {
+      position: absolute;
+      cursor: pointer;
+      left: 0;
+      top: 0;
+      right: 0;
+      bottom: 0;
+      height: 100%;
+      width: 100%;
+      opacity: 0;
+      z-index: 1;
+    }
+  }
+
+  .Header {
+    display: flex;
+    align-items: center;
+    padding: 5px;
+    background: $color-background-dark;
+    justify-content: space-between;
+    &-nav {
+      width: 32px;
+      height: 32px;
+      border-radius: 40px;
+      border: 1px solid $color-line-mid;     
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      font-size: 12px;
+      cursor: pointer;
+    }
+    &-month {
+      flex-grow: 1;
+      margin-left: 5px;
+      text-align: left;
+    }
+    &-year {
+      flex-grow: 1;
+      margin-left: 5px;
+      margin-right: 5px;
+      text-align: left;
+    }
+  }
+}
