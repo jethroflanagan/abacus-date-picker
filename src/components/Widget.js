@@ -1,16 +1,17 @@
 import React, { Component } from 'react';
 import ReactDOM from 'react-dom';
 import moment from 'moment';
-
+import { Dropdown } from './dropdown/Dropdown';
+import { MonthNavigator } from './month-navigator/MonthNavigator';
 import './Widget.scss';
 
 export class Widget extends Component {
-  
+
   constructor(props) {
     super(props);
     const date = props.date || moment();
     this.state = {
-      date, 
+      date,
       day: date.date(),
       month: date.month(),
       year: date.year(),
@@ -91,28 +92,20 @@ export class Widget extends Component {
   createMonthSelector(current) {
     const list = [];
     for (let i = 0; i < 12; i++) {
-      list.push(<option value={i} key={i}>{moment().month(i).format('MMMM')}</option>)
+      list.push({ value: i, label: moment().month(i).format('MMMM')});
     }
     return (
-      <div className="select">
-        <div className="select-label">{moment().month(current).format('MMMM')}</div>
-        <div className="select-arrow">⌄</div>
-        <select onChange={(value) => this.changeMonth(value.target.value)} defaultValue={current}>{list}</select>
-      </div>
+      <Dropdown onChange={(value) => this.changeMonth(value)} value={current} options={list} />
     );
   }
 
   createYearSelector(current) {
     const list = [];
     for (let i = 1900; i < moment().year() + 5; i++) {
-      list.push(<option value={i}>{moment().year(i).format('YYYY')}</option>)
+      list.push({ value: i, label: moment().year(i).format('YYYY')});
     }
     return (
-      <div className="select">
-        <div className="select-label">{moment().year(current).format('YYYY')}</div>
-        <div className="select-arrow">⌄</div>
-        <select onChange={(value) => this.changeYear(value.target.value)} defaultValue={current}>{list}</select>
-      </div>
+      <Dropdown onChange={(value) => this.changeYear(value)} value={current} options={list} />
     );
   }
 
@@ -123,7 +116,7 @@ export class Widget extends Component {
   changeMonth(value) {
     this.setState({ month: value });
   }
-  
+
   changeYear(value) {
     this.setState({ year: value })
   }
@@ -145,10 +138,10 @@ export class Widget extends Component {
     return (
       <div className="Widget">
         <div className="Header">
-          <div className="Header-nav" onClick={() => this.previousMonth()}>🞀</div>
+          <MonthNavigator onClick={() => this.previousMonth()} direction="left" />
           <div className="Header-month">{this.createMonthSelector(month)}</div>
           <div className="Header-year">{this.createYearSelector(year)}</div>
-          <div className="Header-nav" onClick={() => this.nextMonth()}>🞂</div>
+          <MonthNavigator onClick={() => this.nextMonth()} direction="right" />
         </div>
         <div className="Widget-body">
           {this.createDayLabels()}

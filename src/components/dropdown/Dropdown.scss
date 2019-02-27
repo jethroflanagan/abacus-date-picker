@@ -1,0 +1,29 @@
+@import 'src/styles/vars';
+
+.dropdown {
+  position: relative;
+  border: 1px solid $color-line-mid;
+  border-radius: 5px;
+  &-label {
+    padding: 8px 10px;
+  }
+  &-arrow {
+    position: absolute;
+    font-size: 20px;
+    right: 10px;
+    top: 50%;
+    transform: translateY(-50%) translateY(-2px);
+  }
+  & select {
+    position: absolute;
+    cursor: pointer;
+    left: 0;
+    top: 0;
+    right: 0;
+    bottom: 0;
+    height: 100%;
+    width: 100%;
+    opacity: 0;
+    z-index: 1;
+  }
+}

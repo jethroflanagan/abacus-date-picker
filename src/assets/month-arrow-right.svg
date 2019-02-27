@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg width="6px" height="9px" viewBox="0 0 6 9" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+    <!-- Generator: Sketch 53 (72520) - https://sketchapp.com -->
+    <title>Rectangle 5</title>
+    <desc>Created with Sketch.</desc>
+    <defs>
+        <path d="M-2.06120315,0.656854249 L2.24264069,0.656854249 C2.79492544,0.656854249 3.24264069,1.1045695 3.24264069,1.65685425 C3.24264069,1.92207074 3.13728385,2.17642465 2.94974747,2.36396103 L-1.63603897,6.94974747 C-2.02656326,7.34027176 -2.65972824,7.34027176 -3.05025253,6.94974747 C-3.23778891,6.76221109 -3.34314575,6.50785718 -3.34314575,6.24264069 L-3.34314575,1.93879685 C-3.34314575,1.49303748 -3.29673294,1.33139436 -3.2095794,1.1684314 C-3.12242585,1.00546843 -2.99453157,0.877574148 -2.8315686,0.790420601 C-2.66860564,0.703267055 -2.50696252,0.656854249 -2.06120315,0.656854249 Z" id="path-1"></path>
+    </defs>
+    <g id="Page-1" stroke="none" stroke-width="1" fill="none" fill-rule="evenodd">
+        <mask id="mask-2" fill="white">
+            <use xlink:href="#path-1"></use>
+        </mask>
+        <use id="Rectangle-5" fill="#555555" transform="translate(0.656854, 4.656854) rotate(-225.000000) translate(-0.656854, -4.656854) " xlink:href="#path-1"></use>
+    </g>
+</svg>

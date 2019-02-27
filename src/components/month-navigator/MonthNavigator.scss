@@ -1,0 +1,13 @@
+@import 'src/styles/vars';
+
+.navigator {
+  width: 32px;
+  height: 32px;
+  border-radius: 40px;
+  border: 1px solid $color-line-mid;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  font-size: 12px;
+  cursor: pointer;
+}
