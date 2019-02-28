@@ -11,6 +11,7 @@
     "react-scripts": "2.0.3"
   },
   "devDependencies": {
+    "firebase-tools": "^6.4.0",
     "lodash": "^4.17.11",
     "node-sass": "^4.11.0"
   },
