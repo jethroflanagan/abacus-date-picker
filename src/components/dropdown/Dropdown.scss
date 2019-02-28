@@ -1,12 +1,31 @@
 @import 'src/styles/vars';
 
 .dropdown {
+  $color-border: #bbb;
   position: relative;
-  border: 1px solid $color-line-mid;
-  border-radius: 5px;
+  cursor: pointer;
+  &--open, &:hover {
+    box-shadow: 1px 2px 3px 0 rgba(153, 153, 153, .5);
+
+  }
   &-label {
     padding: 8px 10px;
+    border-radius: 3px;
+    border: 1px solid $color-border;
+    .dropdown:hover & {
+      color: $color-focus;
+      background: #fff;
+      border-color: $color-focus;
+
+    }
+    .dropdown--open & {
+      border-radius: 3px 3px 0 0;
+      border-color: $color-focus;
+      color: $color-focus;
+      background: #fff;
+    }
   }
+
   &-arrow {
     position: absolute;
     font-size: 20px;
@@ -14,16 +33,32 @@
     top: 50%;
     transform: translateY(-50%) translateY(-2px);
   }
-  & select {
+
+  &-list {
     position: absolute;
-    cursor: pointer;
-    left: 0;
-    top: 0;
-    right: 0;
-    bottom: 0;
-    height: 100%;
+    border: 1px solid $color-border;
+    border-top: none;
+    background: #fff;
+    border-radius: 0 0 3px 3px;
     width: 100%;
-    opacity: 0;
-    z-index: 1;
+    max-height: 240px;
+    overflow-x: hidden;
+    overflow-y: auto;
+    scroll-behavior: auto;
+    box-shadow: 1px 2px 3px 0 rgba(153, 153, 153, .5);
+  }
+
+  &-option {
+    padding: 10px 20px;
+    cursor: pointer;
+    &--selected {
+      background: $color-focus;
+      color: #fff;
+    }
+    &:hover {
+      background: $color-focus;
+      opacity: 0.7;
+      color: #fff;
+    }
   }
 }

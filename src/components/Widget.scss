@@ -54,12 +54,12 @@
     justify-content: space-between;
 
     &-month {
-      flex-grow: 1;
+      flex: 3;
       margin-left: 5px;
       text-align: left;
     }
     &-year {
-      flex-grow: 1;
+      flex: 2;
       margin-left: 5px;
       margin-right: 5px;
       text-align: left;

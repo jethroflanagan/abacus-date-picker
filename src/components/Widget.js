@@ -18,6 +18,7 @@ export class Widget extends Component {
       selectedDay: 10,
       selectedMonth: 2,
       selectedYear: 2019,
+      dropdownHeight: 200,
     };
   }
 
@@ -48,20 +49,18 @@ export class Widget extends Component {
   }
 
   createDays() {
-    const { day, month, year, date, selectedDay } = this.state;
+    const { day, month, year, date, selectedDay, selectedMonth, selectedYear } = this.state;
     const numDays = moment([year, month, day]).daysInMonth();
     const list = [];
     let startDay = moment([year, month, 1]).day();
     for (let i = 0; i < numDays; i++) {
       const dayNumber = i + 1;
       let state = '';
-      if (month === date.month() && year === date.year()) {
-        state = dayNumber === selectedDay
-          ? 'Widget-day--selected'
-          : (dayNumber === day
-            ? 'Widget-day--current'
-            : ''
-          );
+      if (year === selectedYear && month === selectedMonth && dayNumber === selectedDay) {
+        state = 'Widget-day--selected';
+      }
+      else if (dayNumber === day && month === date.month() && year === date.year()) {
+        state = 'Widget-day--current';
       }
       const style = {};
       if (startDay) {
@@ -95,7 +94,7 @@ export class Widget extends Component {
       list.push({ value: i, label: moment().month(i).format('MMMM')});
     }
     return (
-      <Dropdown onChange={(value) => this.changeMonth(value)} value={current} options={list} />
+      <Dropdown onChange={(value) => this.changeMonth(value)} value={current} options={list} height={this.state.dropdownHeight} />
     );
   }
 
@@ -105,12 +104,14 @@ export class Widget extends Component {
       list.push({ value: i, label: moment().year(i).format('YYYY')});
     }
     return (
-      <Dropdown onChange={(value) => this.changeYear(value)} value={current} options={list} />
+      <Dropdown onChange={(value) => this.changeYear(value)} value={current} options={list} height={this.state.dropdownHeight} />
     );
   }
 
   changeDay(value) {
-    this.setState({ selectedDay: value })
+    let { month, year } = this.state;
+    console.log(value, month, year);
+    this.setState({ selectedDay: value, selectedMonth: month, selectedYear: year })
   }
 
   changeMonth(value) {
@@ -133,6 +134,15 @@ export class Widget extends Component {
     this.setState({ day: nextMonth.date(), month: nextMonth.month(), year: nextMonth.year() });
   }
 
+  componentDidUpdate() {
+    if (this.state.dropdownHeight !== this.refs.body.clientHeight) {
+      this.setState({ dropdownHeight: this.refs.body.clientHeight });
+    }
+  }
+  componentDidMount() {
+    this.setState({ dropdownHeight: this.refs.body.clientHeight });
+  }
+
   render() {
     const { day, month, year, date } = this.state;
     return (
@@ -143,7 +153,7 @@ export class Widget extends Component {
           <div className="Header-year">{this.createYearSelector(year)}</div>
           <MonthNavigator onClick={() => this.nextMonth()} direction="right" />
         </div>
-        <div className="Widget-body">
+        <div className="Widget-body" ref="body">
           {this.createDayLabels()}
           {this.createDays()}
         </div>
