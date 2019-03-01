@@ -33,6 +33,12 @@
       border-color: $color-hover;
       color: $color-hover;
     }
+    &--previous {
+      opacity: .3;
+    }
+    &--next {
+      opacity: .3;
+    }
     &--current {
       border-color: $color-current;
     }

@@ -41,8 +41,13 @@ export class Dropdown extends Component {
     this.setState({ isOpen: false });
   }
 
+  componentWillReceiveProps(props) {
+    if (props.value !== this.state.value) {
+      this.setState({ value: props.value });
+    }
+  }
+
   componentDidUpdate() {
-    console.log(this.props.height);
     if (this.refs.list) {
       const option = this.refs['option-' + this.props.value];
       this.refs.list.scrollTop = option.offsetTop - (this.props.height - option.offsetHeight) / 2;

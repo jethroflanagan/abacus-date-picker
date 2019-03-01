@@ -48,29 +48,69 @@ export class Widget extends Component {
     );
   }
 
+  /**
+   * 
+   * @param {object} param
+   * @param {string} param.type   Can be: 'previous' | 'next' | `null` where `null` is current
+   */
   createDays() {
+    const daysInWeek = 7;
     const { day, month, year, date, selectedDay, selectedMonth, selectedYear } = this.state;
-    const numDays = moment([year, month, day]).daysInMonth();
     const list = [];
+    const daysInCurrentMonth = moment([year, month, day]).daysInMonth();
+    const daysInPreviousMonth = moment([year, month, day]).subtract(1, 'month').daysInMonth();
     let startDay = moment([year, month, 1]).day();
-    for (let i = 0; i < numDays; i++) {
+
+    const numPreviousDaysShown = Math.max(startDay - 1, 0);
+    let numNextDaysShown = daysInWeek - (daysInCurrentMonth + numPreviousDaysShown) % daysInWeek;
+    if (numNextDaysShown === daysInWeek) {
+      numNextDaysShown = 0;
+    }
+
+    let from = - numPreviousDaysShown;
+    let until = daysInCurrentMonth + numNextDaysShown;
+
+    const classNamePrefix = 'Widget-day--';
+
+    for (let i = from; i < until; i++) {
       const dayNumber = i + 1;
-      let state = '';
-      if (year === selectedYear && month === selectedMonth && dayNumber === selectedDay) {
-        state = 'Widget-day--selected';
+      const classNames = [];
+      const style = {};
+      let type = '';
+      let referenceDate = moment([year, month, 1]);
+      if (dayNumber <= 0) {
+        dayNumber = daysInPreviousMonth + i + 1;
+        type = 'previous';
+        referenceDate.subtract(1, 'month');
+      }
+      else if (dayNumber > daysInCurrentMonth) {
+        dayNumber = i - daysInCurrentMonth + 1;
+        type = 'next';
+        referenceDate.add(1, 'month');
+      }
+      else {
+        referenceDate.date(dayNumber);
+      }
+      // if (startDay) {
+      //   style = { ...style, gridColumnStart: startDay};
+      //   startDay = 0;
+      // }
+
+      if (type) {
+        classNames.push(`${classNamePrefix}${type}`);
+      }
+
+      if (referenceDate.year() === selectedYear && referenceDate.month() === selectedMonth && dayNumber === selectedDay) {
+        classNames.push(`${classNamePrefix}selected`);
       }
       else if (dayNumber === day && month === date.month() && year === date.year()) {
-        state = 'Widget-day--current';
+        classNames.push(`${classNamePrefix}current`);
       }
-      const style = {};
-      if (startDay) {
-        style = { ...style, gridColumnStart: startDay};
-        startDay = 0;
-      }
+
       list.push(
-        <div className={`Widget-day ${state}`} onClick={() => this.changeDay(dayNumber)}
+        <div className={`Widget-day ${classNames.join(' ')}`} onClick={() => this.changeDay(dayNumber, referenceDate.month(), referenceDate.year())}
           style={style}
-          key={dayNumber}
+          key={i}
         >
           {dayNumber}
         </div>
@@ -78,6 +118,7 @@ export class Widget extends Component {
     }
     return list;
   }
+
 
   createDayLabels() {
     const list = [];
@@ -108,10 +149,20 @@ export class Widget extends Component {
     );
   }
 
-  changeDay(value) {
-    let { month, year } = this.state;
-    console.log(value, month, year);
-    this.setState({ selectedDay: value, selectedMonth: month, selectedYear: year })
+  changeDay(day, month, year) {
+    // let { month, year } = this.state;
+    // let reference = moment([year, month, 1]);
+    // const day = value + 1;
+    // if (value < 0) {
+    //   reference.subtract(1, 'month');
+    //   reference.date(reference.daysInMonth() + day);
+    // }
+    // else {
+    //   reference.date(day);
+    // }
+    // console.log(reference.date(), month, year);
+
+    this.setState({ selectedDay: day, selectedMonth: month, selectedYear: year })
   }
 
   changeMonth(value) {
