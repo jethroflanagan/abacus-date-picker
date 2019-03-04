@@ -1,11 +1,16 @@
 @import '../styles/vars';
 
+.date-picker {
+  text-align: left;
+}
 
-.Widget {
+.widget {
   $color-current: $color-text-mid;
   $color-selected: $color-focus;
   $color-hover: $color-focus;
+  $color-outside: #ddd;
 
+  margin-top: 10px;
   border: 1px solid $color-line-mid;
   border-radius: 3px;
   box-shadow: 0 0 10px rgba(0,0,0,.3);
@@ -20,7 +25,10 @@
   }
   &-day {
     display: flex;
+    color: $color-text-darkest;
     cursor: pointer;
+    position: relative;
+
     justify-content: center;
     align-items: center;
     text-align: center;
@@ -29,15 +37,15 @@
     height: 32px;
     border: 2px solid transparent;
 
-    &:hover {
+    &:hover:not(&--disabled) {
       border-color: $color-hover;
       color: $color-hover;
     }
     &--previous {
-      opacity: .3;
+      color: $color-outside;
     }
     &--next {
-      opacity: .3;
+      color: $color-outside;
     }
     &--current {
       border-color: $color-current;
@@ -49,10 +57,23 @@
         color: #fff;
       }
     }
+    &--disabled {
+      cursor: not-allowed;
+      color: $color-outside;
+
+      &:after {
+        content: '';
+        display: block;
+        width: 20px;
+        height: 1px;
+        background: $color-outside;
+        position: absolute;
+      }
+    }
 
   }
 
-  .Header {
+  .header {
     display: flex;
     align-items: center;
     padding: 5px;

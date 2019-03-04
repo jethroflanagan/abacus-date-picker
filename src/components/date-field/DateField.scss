@@ -1,0 +1,51 @@
+@import 'src/styles/vars';
+
+.field {
+  display: inline-block;
+  position: relative;
+  border-radius: 5px;
+  border: 1px solid #bbb;
+
+  input[type=number]::-webkit-outer-spin-button,
+  input[type=number]::-webkit-inner-spin-button {
+      -webkit-appearance: none;
+      margin: 0;
+  }
+
+  input[type=number] {
+      -moz-appearance:textfield;
+  }
+
+
+  &-hint {
+    pointer-events: none;
+    position: absolute;
+    padding: 0 10px;
+    color: $color-text-light;
+    font-style: italic;
+    transform: translateY(-50%);
+    font-size: 16px;
+    top: 50%;
+    z-index: -1;
+    .hint-filled {
+      pointer-events: none;
+      color: transparent;
+      font-style: normal;
+      line-height: 32px;
+      font-size: 16px;
+      // margin-left: 1px;
+    }
+  }
+  &-input {
+    font-family: $font-family;
+    background: none;
+    padding: 0 10px;
+    width: 150px;
+    line-height: 32px;
+    font-size: 16px;
+    width: 100%;
+    border: none;
+
+  }
+}
+

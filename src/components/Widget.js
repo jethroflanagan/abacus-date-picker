@@ -1,7 +1,9 @@
 import React, { Component } from 'react';
 import ReactDOM from 'react-dom';
 import moment from 'moment';
+import { find as _find } from 'lodash';
 import { Dropdown } from './dropdown/Dropdown';
+import { DateField } from './date-field/DateField';
 import { MonthNavigator } from './month-navigator/MonthNavigator';
 import './Widget.scss';
 
@@ -67,7 +69,7 @@ export class Widget extends Component {
       numNextDaysShown = 0;
     }
 
-    let from = - numPreviousDaysShown;
+    let from = 0 - numPreviousDaysShown;
     let until = daysInCurrentMonth + numNextDaysShown;
 
     const classNamePrefix = 'Widget-day--';
@@ -76,8 +78,10 @@ export class Widget extends Component {
       const dayNumber = i + 1;
       const classNames = [];
       const style = {};
+      let isDisabled = false;
       let type = '';
       let referenceDate = moment([year, month, 1]);
+
       if (dayNumber <= 0) {
         dayNumber = daysInPreviousMonth + i + 1;
         type = 'previous';
@@ -91,6 +95,7 @@ export class Widget extends Component {
       else {
         referenceDate.date(dayNumber);
       }
+
       // if (startDay) {
       //   style = { ...style, gridColumnStart: startDay};
       //   startDay = 0;
@@ -107,8 +112,17 @@ export class Widget extends Component {
         classNames.push(`${classNamePrefix}current`);
       }
 
+      if (this.checkIsInDisabledRange({ day: dayNumber, month: referenceDate.month(), year: referenceDate.year() })) {
+        isDisabled = true;
+        classNames.push(`${classNamePrefix}disabled`);
+      }
+
+      const clickAction = !isDisabled
+        ? () => this.changeDay(dayNumber, referenceDate.month(), referenceDate.year())
+        : () => {};
+
       list.push(
-        <div className={`Widget-day ${classNames.join(' ')}`} onClick={() => this.changeDay(dayNumber, referenceDate.month(), referenceDate.year())}
+        <div className={`Widget-day ${classNames.join(' ')}`} onClick={clickAction}
           style={style}
           key={i}
         >
@@ -119,6 +133,21 @@ export class Widget extends Component {
     return list;
   }
 
+  /**
+   *  Disabled ranges = array of from, until
+   *
+   * @param {number} day
+   * @param {number} month
+   * @param {number} year
+   */
+  checkIsInDisabledRange({ day, month, year }) {
+    const current = moment([year, month, day]);
+    return _find(this.props.disabledRanges, range => {
+      const from = moment([range.from.year, range.from.month, range.from.day]);
+      const until = moment([range.until.year, range.until.month, range.until.day]);
+      return current.isSameOrAfter(from) && current.isSameOrBefore(until);
+    }) != null;
+  }
 
   createDayLabels() {
     const list = [];
@@ -194,19 +223,29 @@ export class Widget extends Component {
     this.setState({ dropdownHeight: this.refs.body.clientHeight });
   }
 
+  onChangeField({ value, day, month, year }) {
+    console.log('change', value, day, month, year);
+    if (day && month && year) {
+      this.setState({ selectedDay: day, selectedMonth: month, selectedYear: year });
+    }
+  }
+
   render() {
     const { day, month, year, date } = this.state;
     return (
-      <div className="Widget">
-        <div className="Header">
-          <MonthNavigator onClick={() => this.previousMonth()} direction="left" />
-          <div className="Header-month">{this.createMonthSelector(month)}</div>
-          <div className="Header-year">{this.createYearSelector(year)}</div>
-          <MonthNavigator onClick={() => this.nextMonth()} direction="right" />
-        </div>
-        <div className="Widget-body" ref="body">
-          {this.createDayLabels()}
-          {this.createDays()}
+      <div className="date-picker">
+        <DateField onChange={value => this.onChangeField(value)} />
+        <div className="widget">
+          <div className="header">
+            <MonthNavigator onClick={() => this.previousMonth()} direction="left" />
+            <div className="header-month">{this.createMonthSelector(month)}</div>
+            <div className="header-year">{this.createYearSelector(year)}</div>
+            <MonthNavigator onClick={() => this.nextMonth()} direction="right" />
+          </div>
+          <div className="widget-body" ref="body">
+            {this.createDayLabels()}
+            {this.createDays()}
+          </div>
         </div>
       </div>
     );
