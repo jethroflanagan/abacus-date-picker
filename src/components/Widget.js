@@ -7,6 +7,9 @@ import { DateField } from './date-field/DateField';
 import { MonthNavigator } from './month-navigator/MonthNavigator';
 import './Widget.scss';
 
+const MIN_YEAR = 1900;
+const MAX_YEAR = moment().year() + 5;
+
 export class Widget extends Component {
 
   constructor(props) {
@@ -24,31 +27,31 @@ export class Widget extends Component {
     };
   }
 
-  createDay({ dayNumber, startDay }) {
-    const { day, month, year, date, selectedDay } = this.state;
+  // createDay({ dayNumber, startDay }) {
+  //   const { day, month, year, date, selectedDay } = this.state;
 
-    let state = '';
-    if (month === date.month() && year === date.year()) {
-      state = dayNumber === selectedDay
-        ? 'Widget-day--selected'
-        : (dayNumber === day
-          ? 'Widget-day--current'
-          : ''
-        );
-    }
-    const style = {};
-    if (startDay) {
-      style = { ...style, gridColumnStart: startDay};
-      startDay = 0;
-    }
-    return (
-      <div className={`Widget-day ${state}`} onClick={() => this.changeDay(dayNumber)}
-        style={style}
-        key={dayNumber}>
-        {dayNumber}
-      </div>
-    );
-  }
+  //   let state = '';
+  //   if (month === date.month() && year === date.year()) {
+  //     state = dayNumber === selectedDay
+  //       ? 'Widget-day--selected'
+  //       : (dayNumber === day
+  //         ? 'Widget-day--current'
+  //         : ''
+  //       );
+  //   }
+  //   const style = {};
+  //   if (startDay) {
+  //     style = { ...style, gridColumnStart: startDay};
+  //     startDay = 0;
+  //   }
+  //   return (
+  //     <div className={`Widget-day ${state}`} onClick={() => this.changeDay({ day: dayNumber)}
+  //       style={style}
+  //       key={dayNumber}>
+  //       {dayNumber}
+  //     </div>
+  //   );
+  // }
 
   /**
    * 
@@ -72,7 +75,7 @@ export class Widget extends Component {
     let from = 0 - numPreviousDaysShown;
     let until = daysInCurrentMonth + numNextDaysShown;
 
-    const classNamePrefix = 'Widget-day--';
+    const classNamePrefix = 'widget-day--';
 
     for (let i = from; i < until; i++) {
       const dayNumber = i + 1;
@@ -118,11 +121,11 @@ export class Widget extends Component {
       }
 
       const clickAction = !isDisabled
-        ? () => this.changeDay(dayNumber, referenceDate.month(), referenceDate.year())
+        ? () => this.changeDay({ day: dayNumber, month: referenceDate.month(), year: referenceDate.year() })
         : () => {};
 
       list.push(
-        <div className={`Widget-day ${classNames.join(' ')}`} onClick={clickAction}
+        <div className={`widget-day ${classNames.join(' ')}`} onClick={clickAction}
           style={style}
           key={i}
         >
@@ -153,7 +156,7 @@ export class Widget extends Component {
     const list = [];
     for (let i = 1; i < 8; i++) {
       const label = moment().day(i).format('ddd');
-      list.push(<div className="Widget-label" key={i}>{label}</div>)
+      list.push(<div className="widget-label" key={i}>{label}</div>)
     }
     return list;
   }
@@ -170,7 +173,7 @@ export class Widget extends Component {
 
   createYearSelector(current) {
     const list = [];
-    for (let i = 1900; i < moment().year() + 5; i++) {
+    for (let i = MIN_YEAR; i < MAX_YEAR; i++) {
       list.push({ value: i, label: moment().year(i).format('YYYY')});
     }
     return (
@@ -178,7 +181,9 @@ export class Widget extends Component {
     );
   }
 
-  changeDay(day, month, year) {
+  changeDay({ day, month, year }) {
+    console.log(day, month, year, moment([year, month, day]).format('DD MMM YYYY'));
+
     // let { month, year } = this.state;
     // let reference = moment([year, month, 1]);
     // const day = value + 1;
@@ -191,7 +196,8 @@ export class Widget extends Component {
     // }
     // console.log(reference.date(), month, year);
 
-    this.setState({ selectedDay: day, selectedMonth: month, selectedYear: year })
+    // moving to previous or next
+    this.setState({ selectedDay: day, selectedMonth: month, selectedYear: year, month, year })
   }
 
   changeMonth(value) {
@@ -207,7 +213,7 @@ export class Widget extends Component {
     const previousMonth = moment([year, month, day]).add(-1, 'month');
     this.setState({ day: previousMonth.date(), month: previousMonth.month(), year: previousMonth.year() });
   }
-  
+
   nextMonth() {
     let { day, month, year } = this.state;
     const nextMonth = moment([year, month, day]).add(1, 'month');
@@ -223,10 +229,17 @@ export class Widget extends Component {
     this.setState({ dropdownHeight: this.refs.body.clientHeight });
   }
 
-  onChangeField({ value, day, month, year }) {
-    console.log('change', value, day, month, year);
-    if (day && month && year) {
-      this.setState({ selectedDay: day, selectedMonth: month, selectedYear: year });
+  // onChangeField({ value, day, month, year }) {
+  //   console.log('change', value, day, month, year);
+  //   if (day && month && year) {
+  //     this.setState({ selectedDay: day, selectedMonth: month, selectedYear: year });
+  //   }
+  // }
+
+  onChangeField({ day, month, year, resolvedDate }) {
+    console.log(day, month, year, resolvedDate);
+    if (resolvedDate && resolvedDate.isValid() && resolvedDate.year() >= MIN_YEAR && resolvedDate.year() <= MAX_YEAR) {
+      this.changeDay({ day, month, year });
     }
   }
 

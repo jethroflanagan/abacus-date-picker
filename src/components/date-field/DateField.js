@@ -127,9 +127,9 @@ export class DateField extends Component {
       year = this.completeField(year, fieldToCompleteIndex);
     }
 
+    let resolvedDate = null;
     if (day && month && year) {
-      const resolvedDate = moment([year, month - 1, day]);
-      console.log('xxx', resolvedDate.format('DD MMMM YYYY'));
+      resolvedDate = moment([year, month - 1, day]);
       if (!resolvedDate.isValid()) {
         errors.push('Invalid');
         // console.log(resolvedDate);
@@ -142,7 +142,7 @@ export class DateField extends Component {
     hint = HINT.substr(value.length);
 
     this.setState({ value, hint, errors });
-    this.props.onChange({ day, month, year, value });
+    this.props.onChange({ day: parseInt(day, 10), month: parseInt(month, 10) - 1, year: parseInt(year, 10), value, resolvedDate });
   }
 
   // resolveDate({ day, month, year }) {

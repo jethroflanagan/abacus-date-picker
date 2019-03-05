@@ -40,6 +40,7 @@
     &:hover:not(&--disabled) {
       border-color: $color-hover;
       color: $color-hover;
+      transition: all $ease;
     }
     &--previous {
       color: $color-outside;
@@ -53,9 +54,11 @@
     &--selected {
       color: #fff;
       background: $color-selected;
-      &:hover {
+      &:hover:not(&--disabled) { // added not for specificity override
         color: #fff;
       }
+      animation: select-day $ease;
+      transition: all $ease;
     }
     &--disabled {
       cursor: not-allowed;
@@ -92,4 +95,16 @@
       text-align: left;
     }
   }
+  @keyframes select-day {
+    0% {
+      transform: scale(1);
+    }
+    20% {
+      transform: scale(1.2);
+    }
+    100% {
+      transform: scale(1);
+    }
+  }
+
 }
