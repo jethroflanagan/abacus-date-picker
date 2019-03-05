@@ -61,9 +61,14 @@ export class DateField extends Component {
   }
 
   change(e) {
+    const inputField = this.refs.input;
+    const caretStart = inputField.selectionStart;
+    const caretEnd = inputField.selectionEnd;
+
     // e.preventDefault();
     let { hint } = this.state;
     let value = e.target.value.toString();
+    console.log('value', value);
     const errors = [];
 
     // swap all possible separators for correct one
@@ -78,7 +83,7 @@ export class DateField extends Component {
       ''
     );
 
-    const editIndex = this.findDifference(value, this.state.value);
+    let editIndex = this.findDifference(value, this.state.value);
     let fieldToCompleteIndex = null;
 
     // find attempts at splitting
@@ -90,7 +95,7 @@ export class DateField extends Component {
       // });
 
       fieldToCompleteIndex = this.findClosestSeparatorFieldIndex({ value, editIndex });
-      console.log(fieldToCompleteIndex);
+      // console.log(fieldToCompleteIndex);
       // if (editIndex >
       // if (editIndex < 2) {
       //   completeComponent = 'day';
@@ -126,6 +131,7 @@ export class DateField extends Component {
     if (fieldToCompleteIndex === 2) {
       year = this.completeField(year, fieldToCompleteIndex);
     }
+    // editIndex++;
 
     let resolvedDate = null;
     if (day && month && year) {
@@ -143,6 +149,11 @@ export class DateField extends Component {
 
     this.setState({ value, hint, errors });
     this.props.onChange({ day: parseInt(day, 10), month: parseInt(month, 10) - 1, year: parseInt(year, 10), value, resolvedDate });
+    console.log('caretStart', caretStart, 'caretEnd', caretEnd, 'editIndex', editIndex);
+    // requestAnimationFrame(() => {
+    //   inputField.selectionStart = editIndex;
+    //   inputField.selectionEnd = editIndex;
+    // });
   }
 
   // resolveDate({ day, month, year }) {
@@ -177,7 +188,7 @@ export class DateField extends Component {
       <div>
         <div className="field">
           <div className="field-hint"><span className="hint-filled">{ value }</span>{ hint }</div>
-          <input className="field-input" onChange={e => this.change(e)} value={value} maxLength={MAX_LENGTH} />
+          <input className="field-input" onChange={e => this.change(e)} value={value} ref="input" />
         </div>
         <div className="field-errors">
           { errors.map((error, i) => <div className="field-errors-item" key={i}>{error}</div>) }

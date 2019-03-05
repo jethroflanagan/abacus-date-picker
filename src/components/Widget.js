@@ -237,7 +237,6 @@ export class Widget extends Component {
   // }
 
   onChangeField({ day, month, year, resolvedDate }) {
-    console.log(day, month, year, resolvedDate);
     if (resolvedDate && resolvedDate.isValid() && resolvedDate.year() >= MIN_YEAR && resolvedDate.year() <= MAX_YEAR) {
       this.changeDay({ day, month, year });
     }
