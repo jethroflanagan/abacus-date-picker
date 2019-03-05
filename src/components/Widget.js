@@ -58,22 +58,17 @@ export class Widget extends Component {
    * @param {object} param
    * @param {string} param.type   Can be: 'previous' | 'next' | `null` where `null` is current
    */
-  createDays() {
+  createDays({ month, year }) {
     const daysInWeek = 7;
-    const { day, month, year, date, selectedDay, selectedMonth, selectedYear } = this.state;
+    const { date, day, selectedDay, selectedMonth, selectedYear } = this.state;
     const list = [];
-    const daysInCurrentMonth = moment([year, month, day]).daysInMonth();
-    const daysInPreviousMonth = moment([year, month, day]).subtract(1, 'month').daysInMonth();
+    const daysInMonth = moment([year, month, 1]).daysInMonth();
+    // const daysInPreviousMonth = moment([year, month, day]).subtract(1, 'month').daysInMonth();
+    // const daysInNextMonth = moment([year, month, day]).subtract(1, 'month').daysInMonth();
     let startDay = moment([year, month, 1]).day();
 
-    const numPreviousDaysShown = Math.max(startDay - 1, 0);
-    let numNextDaysShown = daysInWeek - (daysInCurrentMonth + numPreviousDaysShown) % daysInWeek;
-    if (numNextDaysShown === daysInWeek) {
-      numNextDaysShown = 0;
-    }
-
-    let from = 0 - numPreviousDaysShown;
-    let until = daysInCurrentMonth + numNextDaysShown;
+    let from = 0;;
+    let until = daysInMonth;
 
     const classNamePrefix = 'widget-day--';
 
@@ -81,28 +76,29 @@ export class Widget extends Component {
       const dayNumber = i + 1;
       const classNames = [];
       const style = {};
+      const containerStyle = {};
+
       let isDisabled = false;
       let type = '';
       let referenceDate = moment([year, month, 1]);
 
-      if (dayNumber <= 0) {
-        dayNumber = daysInPreviousMonth + i + 1;
-        type = 'previous';
-        referenceDate.subtract(1, 'month');
-      }
-      else if (dayNumber > daysInCurrentMonth) {
-        dayNumber = i - daysInCurrentMonth + 1;
-        type = 'next';
-        referenceDate.add(1, 'month');
-      }
-      else {
-        referenceDate.date(dayNumber);
+      referenceDate.date(dayNumber);
+
+      if (startDay) {
+        style = { ...style, gridColumnStart: startDay};
+        startDay = 0;
       }
 
-      // if (startDay) {
-      //   style = { ...style, gridColumnStart: startDay};
-      //   startDay = 0;
-      // }
+      if (dayNumber <= daysInWeek) {
+        containerStyle = { ...containerStyle,
+          borderTopWidth: '1px',
+        };
+        if (dayNumber === 1) {
+          containerStyle = { ...containerStyle,
+            borderLeftWidth: '1px',
+          };
+        }
+      }
 
       if (type) {
         classNames.push(`${classNamePrefix}${type}`);
@@ -125,11 +121,13 @@ export class Widget extends Component {
         : () => {};
 
       list.push(
-        <div className={`widget-day ${classNames.join(' ')}`} onClick={clickAction}
-          style={style}
-          key={i}
-        >
-          {dayNumber}
+        <div className="widget-day-container" style={containerStyle}>
+          <div className={`widget-day ${classNames.join(' ')}`} onClick={clickAction}
+            style={style}
+            key={i}
+          >
+            {dayNumber}
+          </div>
         </div>
       );
     }
@@ -242,6 +240,19 @@ export class Widget extends Component {
     }
   }
 
+  createScrollingList() {
+    const currentDate = moment().date(1).subtract(10, 'months');
+    const list = [];
+    for (let i = 0; i < 10; i++) {
+      currentDate.add(1, 'months');
+      console.log(currentDate.format('DD MMM YYYY'));
+      list.push(
+        this.createDays({ month: currentDate.month(), year: currentDate.year() })
+      );
+    }
+    return list;
+  }
+
   render() {
     const { day, month, year, date } = this.state;
     return (
@@ -254,9 +265,11 @@ export class Widget extends Component {
             <div className="header-year">{this.createYearSelector(year)}</div>
             <MonthNavigator onClick={() => this.nextMonth()} direction="right" />
           </div>
-          <div className="widget-body" ref="body">
+          <div className="widget-header-days">
             {this.createDayLabels()}
-            {this.createDays()}
+          </div>
+          <div className="widget-body" ref="body">
+            {this.createScrollingList()}
           </div>
         </div>
       </div>
