@@ -1,11 +1,12 @@
 import React, { Component } from 'react';
 import ReactDOM from 'react-dom';
 import moment from 'moment';
-import { find as _find } from 'lodash';
 import { Dropdown } from './dropdown/Dropdown';
 import { DateField } from './date-field/DateField';
 import { MonthNavigator } from './month-navigator/MonthNavigator';
+import { Month } from './month/Month';
 import './Widget.scss';
+import { Tag } from './tag/Tag';
 
 const MIN_YEAR = 1900;
 const MAX_YEAR = moment().year() + 5;
@@ -53,102 +54,7 @@ export class Widget extends Component {
   //   );
   // }
 
-  /**
-   * 
-   * @param {object} param
-   * @param {string} param.type   Can be: 'previous' | 'next' | `null` where `null` is current
-   */
-  createDays({ month, year }) {
-    const daysInWeek = 7;
-    const { date, day, selectedDay, selectedMonth, selectedYear } = this.state;
-    const list = [];
-    const daysInMonth = moment([year, month, 1]).daysInMonth();
-    // const daysInPreviousMonth = moment([year, month, day]).subtract(1, 'month').daysInMonth();
-    // const daysInNextMonth = moment([year, month, day]).subtract(1, 'month').daysInMonth();
-    let startDay = moment([year, month, 1]).day();
 
-    let from = 0;;
-    let until = daysInMonth;
-
-    const classNamePrefix = 'widget-day--';
-
-    for (let i = from; i < until; i++) {
-      const dayNumber = i + 1;
-      const classNames = [];
-      const style = {};
-      const containerStyle = {};
-
-      let isDisabled = false;
-      let type = '';
-      let referenceDate = moment([year, month, 1]);
-
-      referenceDate.date(dayNumber);
-
-      if (startDay) {
-        style = { ...style, gridColumnStart: startDay};
-        startDay = 0;
-      }
-
-      if (dayNumber <= daysInWeek) {
-        containerStyle = { ...containerStyle,
-          borderTopWidth: '1px',
-        };
-        if (dayNumber === 1) {
-          containerStyle = { ...containerStyle,
-            borderLeftWidth: '1px',
-          };
-        }
-      }
-
-      if (type) {
-        classNames.push(`${classNamePrefix}${type}`);
-      }
-
-      if (referenceDate.year() === selectedYear && referenceDate.month() === selectedMonth && dayNumber === selectedDay) {
-        classNames.push(`${classNamePrefix}selected`);
-      }
-      else if (dayNumber === day && month === date.month() && year === date.year()) {
-        classNames.push(`${classNamePrefix}current`);
-      }
-
-      if (this.checkIsInDisabledRange({ day: dayNumber, month: referenceDate.month(), year: referenceDate.year() })) {
-        isDisabled = true;
-        classNames.push(`${classNamePrefix}disabled`);
-      }
-
-      const clickAction = !isDisabled
-        ? () => this.changeDay({ day: dayNumber, month: referenceDate.month(), year: referenceDate.year() })
-        : () => {};
-
-      list.push(
-        <div className="widget-day-container" style={containerStyle}>
-          <div className={`widget-day ${classNames.join(' ')}`} onClick={clickAction}
-            style={style}
-            key={i}
-          >
-            {dayNumber}
-          </div>
-        </div>
-      );
-    }
-    return list;
-  }
-
-  /**
-   *  Disabled ranges = array of from, until
-   *
-   * @param {number} day
-   * @param {number} month
-   * @param {number} year
-   */
-  checkIsInDisabledRange({ day, month, year }) {
-    const current = moment([year, month, day]);
-    return _find(this.props.disabledRanges, range => {
-      const from = moment([range.from.year, range.from.month, range.from.day]);
-      const until = moment([range.until.year, range.until.month, range.until.day]);
-      return current.isSameOrAfter(from) && current.isSameOrBefore(until);
-    }) != null;
-  }
 
   createDayLabels() {
     const list = [];
@@ -241,20 +147,32 @@ export class Widget extends Component {
   }
 
   createScrollingList() {
+    const { date, day, selectedDay, selectedMonth, selectedYear } = this.state;
     const currentDate = moment().date(1).subtract(10, 'months');
     const list = [];
-    for (let i = 0; i < 10; i++) {
+    const tags = [];
+    for (let i = 0; i < 20; i++) {
       currentDate.add(1, 'months');
-      console.log(currentDate.format('DD MMM YYYY'));
+      const year = currentDate.year();
+      const month = currentDate.month();
+      const ref = React.createRef();
       list.push(
-        this.createDays({ month: currentDate.month(), year: currentDate.year() })
+        <Month month={month} year={year} date={date} day={day} selectedDay={selectedDay} selectedMonth={selectedMonth} selectedYear={selectedYear} ref={ref} key={i}/>
+      );
+      tags.push(
+        <Tag month={month} year={year} el={ref} key={i}/>
       );
     }
-    return list;
+    return { list, tags };
+  }
+
+  onScroll(e) {
+    console.log(e);
   }
 
   render() {
     const { day, month, year, date } = this.state;
+    const { list, tags } = this.createScrollingList();
     return (
       <div className="date-picker">
         <DateField onChange={value => this.onChangeField(value)} />
@@ -268,8 +186,11 @@ export class Widget extends Component {
           <div className="widget-header-days">
             {this.createDayLabels()}
           </div>
-          <div className="widget-body" ref="body">
-            {this.createScrollingList()}
+          <div className="widget-body" ref="body" onScroll={(e) => this.onScroll(e)}>
+            {list}
+          </div>
+          <div className="widget-tags" ref="tags">
+            {tags}
           </div>
         </div>
       </div>

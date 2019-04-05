@@ -1,0 +1,92 @@
+@import 'src/styles/vars';
+
+.month {
+  $color-current: $color-text-mid;
+  $color-selected: $color-focus;
+  $color-hover: $color-focus;
+  $color-outside: #ddd;
+
+  display: flex;
+  // grid-template-columns: repeat(7, 1fr);
+  // grid-column-start: div 3;
+  // grid-template-rows: repeat(6, 45px);
+  // grid-gap: 5px;
+  // padding: 20px 0;
+  padding-top: 0;
+  width: 320px;
+  position: relative;
+  flex-wrap: wrap;
+
+  .day-container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding: 4px;
+    width: 45px;
+    height: 45px;
+    border: 0px solid #ccc;
+  }
+  .day {
+    display: flex;
+    color: $color-text-darkest;
+    cursor: pointer;
+    position: relative;
+
+    justify-content: center;
+    align-items: center;
+    text-align: center;
+    border-radius: 32px;
+    width: 32px;
+    height: 32px;
+    border: 2px solid transparent;
+
+    &:hover:not(&--disabled) {
+      border-color: $color-hover;
+      color: $color-hover;
+      transition: all $ease;
+    }
+    &--previous {
+      color: $color-outside;
+    }
+    &--next {
+      color: $color-outside;
+    }
+    &--current {
+      border-color: $color-current;
+    }
+    &--selected {
+      color: #fff;
+      background: $color-selected;
+      &:hover:not(&--disabled) { // added not for specificity override
+        color: #fff;
+      }
+      animation: select-day $ease;
+      transition: all $ease;
+    }
+    &--disabled {
+      cursor: not-allowed;
+      color: $color-outside;
+
+      &:after {
+        content: '';
+        display: block;
+        width: 20px;
+        height: 1px;
+        background: $color-outside;
+        position: absolute;
+      }
+    }
+
+  }
+  @keyframes select-day {
+    0% {
+      transform: scale(1);
+    }
+    20% {
+      transform: scale(1.2);
+    }
+    100% {
+      transform: scale(1);
+    }
+  }
+}

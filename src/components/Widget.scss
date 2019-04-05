@@ -9,12 +9,12 @@
   $color-selected: $color-focus;
   $color-hover: $color-focus;
   $color-outside: #ddd;
-
+  position: relative;
   margin-top: 10px;
   border: 1px solid $color-line-mid;
   border-radius: 3px;
   box-shadow: 0 0 10px rgba(0,0,0,.3);
-  max-width: 320px;
+  max-width: 317px;
   &-header-days {
     display: grid;
     grid-template-columns: repeat(7, 1fr);
@@ -22,79 +22,9 @@
     padding: 10px 0;
   }
   &-body {
-    display: grid;
-    grid-template-columns: repeat(7, 1fr);
-    grid-column-start: div 3;
-    // grid-gap: 5px;
-    justify-items: center;
-    padding: 20px 0;
-    padding-top: 0;
-    height: 300px;
-    overflow: auto;
+    height: 560px;
+    overflow: hidden;
   }
-  &-day-container {
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    padding: 4px;
-    // force full width
-    width: 100%;
-    height: 100%;
-    border: 0px solid #ccc;
-  }
-  &-day {
-    display: flex;
-    color: $color-text-darkest;
-    cursor: pointer;
-    position: relative;
-
-    justify-content: center;
-    align-items: center;
-    text-align: center;
-    border-radius: 32px;
-    width: 32px;
-    height: 32px;
-    border: 2px solid transparent;
-
-    &:hover:not(&--disabled) {
-      border-color: $color-hover;
-      color: $color-hover;
-      transition: all $ease;
-    }
-    &--previous {
-      color: $color-outside;
-    }
-    &--next {
-      color: $color-outside;
-    }
-    &--current {
-      border-color: $color-current;
-    }
-    &--selected {
-      color: #fff;
-      background: $color-selected;
-      &:hover:not(&--disabled) { // added not for specificity override
-        color: #fff;
-      }
-      animation: select-day $ease;
-      transition: all $ease;
-    }
-    &--disabled {
-      cursor: not-allowed;
-      color: $color-outside;
-
-      &:after {
-        content: '';
-        display: block;
-        width: 20px;
-        height: 1px;
-        background: $color-outside;
-        position: absolute;
-      }
-    }
-
-  }
-
   .header {
     display: flex;
     align-items: center;
@@ -114,16 +44,15 @@
       text-align: left;
     }
   }
-  @keyframes select-day {
-    0% {
-      transform: scale(1);
-    }
-    20% {
-      transform: scale(1.2);
-    }
-    100% {
-      transform: scale(1);
-    }
+
+  &-tags {
+    position: absolute;
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: 100%;
+    transform: translateX(100%);
+    overflow: hidden;
   }
 
 }
