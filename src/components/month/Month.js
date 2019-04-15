@@ -31,6 +31,14 @@ export class Month extends Component {
     }) != null;
   }
 
+  getStartDay({ month, year }) {
+    return moment([year, month, 1]).day();
+  }
+
+  changeDay({ day, month, year }) {
+    this.props.changeDay({ day, month, year });
+  }
+
   /**
    *
    * @param {object} param
@@ -43,10 +51,7 @@ export class Month extends Component {
     const daysInMonth = moment([year, month, 1]).daysInMonth();
     // const daysInPreviousMonth = moment([year, month, day]).subtract(1, 'month').daysInMonth();
     // const daysInNextMonth = moment([year, month, day]).subtract(1, 'month').daysInMonth();
-    let startDay = moment([year, month, 1]).day();
-    // if (startDay ===
-    console.log(startDay,'|', month, year, moment([year, month, 1]).format('MMM yyyy'));
-
+    let startDay = this.getStartDay({ month, year });//moment([year, month, 1]).day();
     let from = 0;;
     let until = daysInMonth;
 
@@ -99,15 +104,19 @@ export class Month extends Component {
         classNames.push(`${classNamePrefix}disabled`);
       }
 
+      if (dayNumber === '') {
+        isDisabled = true;
+        containerStyle = { ...containerStyle, pointerEvents: 'none' };
+      }
+
       const clickAction = !isDisabled
         ? () => this.changeDay({ day: dayNumber, month: referenceDate.month(), year: referenceDate.year() })
         : () => {};
 
       list.push(
-        <div className="day-container" style={containerStyle}>
+        <div className="day-container" style={containerStyle} key={i}>
           <div className={`day ${classNames.join(' ')}`} onClick={clickAction}
             style={style}
-            key={i}
           >
             {dayNumber}
           </div>
@@ -120,8 +129,12 @@ export class Month extends Component {
   render() {
     const { month, year } = this.props;
     const days = this.createDays({ month, year });
+    let classNames = 'month';
+    if (this.getStartDay({ month, year }) >= 1) {
+      classNames += ' month--upshift';
+    }
     return (
-      <div className="month" ref={this.ref}>
+      <div className={classNames} ref={this.ref}>
         {/* <Tag month={month} year={year} /> */}
 
         {days}

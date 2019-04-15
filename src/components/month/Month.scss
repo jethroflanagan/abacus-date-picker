@@ -13,16 +13,19 @@
   // grid-gap: 5px;
   // padding: 20px 0;
   padding-top: 0;
-  width: 320px;
+  width: 100%;
   position: relative;
   flex-wrap: wrap;
+  &--upshift {
+    margin-top: -45px;
+  }
 
   .day-container {
     display: flex;
     justify-content: center;
     align-items: center;
     padding: 4px;
-    width: 45px;
+    width: 14%;
     height: 45px;
     border: 0px solid #ccc;
   }

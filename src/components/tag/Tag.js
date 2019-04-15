@@ -14,7 +14,7 @@ export class Tag extends Component {
   componentDidMount() {
     this.setState({
       // omfg
-      position: this.props.el.current.ref.current.offsetTop,
+      position: this.props.el.current.ref.current.offsetTop - 90,
     });
   }
 
@@ -28,7 +28,7 @@ export class Tag extends Component {
     return (
       <div className="tag" style={{ top: position + 'px' }}>
         {moment().month(month).format('MMMM')} {year}
-      </div>     
+      </div>
     );
   }
 }

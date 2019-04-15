@@ -86,7 +86,7 @@ export class Widget extends Component {
   }
 
   changeDay({ day, month, year }) {
-    console.log(day, month, year, moment([year, month, day]).format('DD MMM YYYY'));
+    // console.log(day, month, year, moment([year, month, day]).format('DD MMM YYYY'));
 
     // let { month, year } = this.state;
     // let reference = moment([year, month, 1]);
@@ -157,7 +157,7 @@ export class Widget extends Component {
       const month = currentDate.month();
       const ref = React.createRef();
       list.push(
-        <Month month={month} year={year} date={date} day={day} selectedDay={selectedDay} selectedMonth={selectedMonth} selectedYear={selectedYear} ref={ref} key={i}/>
+        <Month month={month} year={year} date={date} day={day} selectedDay={selectedDay} selectedMonth={selectedMonth} selectedYear={selectedYear} ref={ref} key={i} changeDay={(...args) => this.changeDay(...args)}/>
       );
       tags.push(
         <Tag month={month} year={year} el={ref} key={i}/>
@@ -167,7 +167,7 @@ export class Widget extends Component {
   }
 
   onScroll(e) {
-    console.log(e);
+    this.refs.tags.scrollTo(0, e.target.scrollTop);
   }
 
   render() {
