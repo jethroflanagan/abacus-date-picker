@@ -22,13 +22,9 @@
     padding: 10px 0;
   }
   &-body {
-    height: 560px;
     overflow: hidden;
-    overflow-y: auto;
-    // justify-content: center;
-    // display: flex;
-    // flex-direction: column;
     text-align: center;
+    position: relative;
   }
   .header {
     display: flex;

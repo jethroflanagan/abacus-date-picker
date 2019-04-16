@@ -49,18 +49,27 @@ export class Month extends Component {
     const { date, day, selectedDay, selectedMonth, selectedYear } = this.props;
     const list = [];
     const daysInMonth = moment([year, month, 1]).daysInMonth();
-    // const daysInPreviousMonth = moment([year, month, day]).subtract(1, 'month').daysInMonth();
+    const daysInPreviousMonth = moment([year, month, 1]).subtract(1, 'month').daysInMonth();
     // const daysInNextMonth = moment([year, month, day]).subtract(1, 'month').daysInMonth();
     let startDay = this.getStartDay({ month, year });//moment([year, month, 1]).day();
+    let extraDays = daysInWeek - ((startDay + daysInMonth) % daysInWeek);
+    if (extraDays === daysInWeek) {
+      extraDays = 0;
+    }
     let from = 0;;
-    let until = daysInMonth;
-
+    let until = daysInMonth + extraDays;
     const classNamePrefix = 'day--';
 
     for (let i = from - startDay; i < until; i++) {
       const dayNumber = i + 1;
-      if (dayNumber <= 0) {
-        dayNumber = '';
+      let isClickable = true;
+      if (dayNumber <= 0) {// || dayNumber >= daysInMonth) {
+        dayNumber = daysInPreviousMonth + i + 1 + '_';
+        isClickable = false;
+      }
+      else if (dayNumber > daysInMonth) {
+        dayNumber = '_' + (dayNumber - daysInMonth + 1);
+        isClickable = false;
       }
       const classNames = [];
       const style = {};
@@ -71,22 +80,6 @@ export class Month extends Component {
       let referenceDate = moment([year, month, 1]);
 
       referenceDate.date(dayNumber);
-
-      // if (startDay) {
-      //   // containerStyle = { ...containerStyle, gridColumnStart: startDay};
-      //   startDay = 0;
-      // }
-
-      if (dayNumber && dayNumber <= daysInWeek) {
-        containerStyle = { ...containerStyle,
-          borderTopWidth: '1px',
-        };
-        if (dayNumber === 1) {
-          containerStyle = { ...containerStyle,
-            borderLeftWidth: '1px',
-          };
-        }
-      }
 
       if (type) {
         classNames.push(`${classNamePrefix}${type}`);
@@ -104,14 +97,16 @@ export class Month extends Component {
         classNames.push(`${classNamePrefix}disabled`);
       }
 
-      if (dayNumber === '') {
+      let clickAction = null;
+      if (!isClickable) {
         isDisabled = true;
         containerStyle = { ...containerStyle, pointerEvents: 'none' };
+        clickAction = () => {};
+      }
+      else {
+        clickAction = () => this.changeDay({ day: dayNumber, month: referenceDate.month(), year: referenceDate.year() })
       }
 
-      const clickAction = !isDisabled
-        ? () => this.changeDay({ day: dayNumber, month: referenceDate.month(), year: referenceDate.year() })
-        : () => {};
 
       list.push(
         <div className="day-container" style={containerStyle} key={i}>
@@ -129,14 +124,8 @@ export class Month extends Component {
   render() {
     const { month, year } = this.props;
     const days = this.createDays({ month, year });
-    let classNames = 'month';
-    if (this.getStartDay({ month, year }) >= 1) {
-      classNames += ' month--upshift';
-    }
     return (
-      <div className={classNames} ref={this.ref}>
-        {/* <Tag month={month} year={year} /> */}
-
+      <div className='month' ref={this.ref} style={this.props.style}>
         {days}
       </div>
     );

@@ -7,6 +7,7 @@ import { MonthNavigator } from './month-navigator/MonthNavigator';
 import { Month } from './month/Month';
 import './Widget.scss';
 import { Tag } from './tag/Tag';
+import _map from 'lodash/map';
 
 const MIN_YEAR = 1900;
 const MAX_YEAR = moment().year() + 5;
@@ -27,34 +28,6 @@ export class Widget extends Component {
       dropdownHeight: 200,
     };
   }
-
-  // createDay({ dayNumber, startDay }) {
-  //   const { day, month, year, date, selectedDay } = this.state;
-
-  //   let state = '';
-  //   if (month === date.month() && year === date.year()) {
-  //     state = dayNumber === selectedDay
-  //       ? 'Widget-day--selected'
-  //       : (dayNumber === day
-  //         ? 'Widget-day--current'
-  //         : ''
-  //       );
-  //   }
-  //   const style = {};
-  //   if (startDay) {
-  //     style = { ...style, gridColumnStart: startDay};
-  //     startDay = 0;
-  //   }
-  //   return (
-  //     <div className={`Widget-day ${state}`} onClick={() => this.changeDay({ day: dayNumber)}
-  //       style={style}
-  //       key={dayNumber}>
-  //       {dayNumber}
-  //     </div>
-  //   );
-  // }
-
-
 
   createDayLabels() {
     const list = [];
@@ -86,21 +59,6 @@ export class Widget extends Component {
   }
 
   changeDay({ day, month, year }) {
-    // console.log(day, month, year, moment([year, month, day]).format('DD MMM YYYY'));
-
-    // let { month, year } = this.state;
-    // let reference = moment([year, month, 1]);
-    // const day = value + 1;
-    // if (value < 0) {
-    //   reference.subtract(1, 'month');
-    //   reference.date(reference.daysInMonth() + day);
-    // }
-    // else {
-    //   reference.date(day);
-    // }
-    // console.log(reference.date(), month, year);
-
-    // moving to previous or next
     this.setState({ selectedDay: day, selectedMonth: month, selectedYear: year, month, year })
   }
 
@@ -133,46 +91,38 @@ export class Widget extends Component {
     this.setState({ dropdownHeight: this.refs.body.clientHeight });
   }
 
-  // onChangeField({ value, day, month, year }) {
-  //   console.log('change', value, day, month, year);
-  //   if (day && month && year) {
-  //     this.setState({ selectedDay: day, selectedMonth: month, selectedYear: year });
-  //   }
-  // }
-
   onChangeField({ day, month, year, resolvedDate }) {
     if (resolvedDate && resolvedDate.isValid() && resolvedDate.year() >= MIN_YEAR && resolvedDate.year() <= MAX_YEAR) {
       this.changeDay({ day, month, year });
     }
   }
 
-  createScrollingList() {
-    const { date, day, selectedDay, selectedMonth, selectedYear } = this.state;
-    const currentDate = moment().date(1).subtract(10, 'months');
+  createMonths() {
+    const { day, month, year, date, selectedDay, selectedMonth, selectedYear } = this.state;
     const list = [];
-    const tags = [];
-    for (let i = 0; i < 20; i++) {
-      currentDate.add(1, 'months');
-      const year = currentDate.year();
-      const month = currentDate.month();
-      const ref = React.createRef();
+    for (let i = -1; i < 2; i++) {
+      const current = moment([year, month, 1]).add(i, 'month');
+      let style = {};
+      if (i !== 0) {
+        style = {
+          position: 'absolute',
+          top: 0,
+        }
+      }
       list.push(
-        <Month month={month} year={year} date={date} day={day} selectedDay={selectedDay} selectedMonth={selectedMonth} selectedYear={selectedYear} ref={ref} key={i} changeDay={(...args) => this.changeDay(...args)}/>
-      );
-      tags.push(
-        <Tag month={month} year={year} el={ref} key={i}/>
+        <Month month={current.month()} year={current.year()} date={date}
+          day={day} selectedDay={selectedDay} selectedMonth={selectedMonth} selectedYear={selectedYear}
+          changeDay={(...args) => this.changeDay(...args)}
+          key={i}
+          style={{...style, zIndex: 2-Math.abs(i)}}/>
       );
     }
-    return { list, tags };
-  }
-
-  onScroll(e) {
-    this.refs.tags.scrollTo(0, e.target.scrollTop);
+    return list;
   }
 
   render() {
-    const { day, month, year, date } = this.state;
-    const { list, tags } = this.createScrollingList();
+    const { month, year } = this.state;
+    const monthList = this.createMonths();
     return (
       <div className="date-picker">
         <DateField onChange={value => this.onChangeField(value)} />
@@ -186,11 +136,8 @@ export class Widget extends Component {
           <div className="widget-header-days">
             {this.createDayLabels()}
           </div>
-          <div className="widget-body" ref="body" onScroll={(e) => this.onScroll(e)}>
-            {list}
-          </div>
-          <div className="widget-tags" ref="tags">
-            {tags}
+          <div className="widget-body" ref="body">
+            {monthList}
           </div>
         </div>
       </div>
