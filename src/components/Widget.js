@@ -26,6 +26,7 @@ export class Widget extends Component {
       selectedMonth: 2,
       selectedYear: 2019,
       dropdownHeight: 200,
+      animationDirection: 0,
     };
   }
 
@@ -59,7 +60,19 @@ export class Widget extends Component {
   }
 
   changeDay({ day, month, year }) {
-    this.setState({ selectedDay: day, selectedMonth: month, selectedYear: year, month, year })
+    // this.
+    // this.setState({ selectedDay: day, selectedMonth: month, selectedYear: year, month, year });
+    let animationDirection = 0;
+    if (+moment([year, month, day]) > +this.state.date) {
+      animationDirection = -1;
+    }
+    else {
+      animationDirection = 1;
+    }
+    this.setState({
+      animationDirection,
+    });
+    this.setupAnimationCompletion();
   }
 
   changeMonth(value) {
@@ -73,13 +86,25 @@ export class Widget extends Component {
   previousMonth() {
     let { day, month, year } = this.state;
     const previousMonth = moment([year, month, day]).add(-1, 'month');
-    this.setState({ day: previousMonth.date(), month: previousMonth.month(), year: previousMonth.year() });
+    // this.setState({ day: previousMonth.date(), month: previousMonth.month(), year: previousMonth.year() });
+    this.setState({ animationDirection: 1 });
+    this.setupAnimationCompletion();
   }
 
   nextMonth() {
     let { day, month, year } = this.state;
     const nextMonth = moment([year, month, day]).add(1, 'month');
-    this.setState({ day: nextMonth.date(), month: nextMonth.month(), year: nextMonth.year() });
+    // this.setState({ day: nextMonth.date(), month: nextMonth.month(), year: nextMonth.year() });
+    this.setState({ animationDirection: -1 });
+    this.setupAnimationCompletion();
+  }
+
+  setupAnimationCompletion() {
+    setTimeout(() => {
+      // this.setState({
+      //   animationDirection: 0,
+      // });
+    }, 2000);
   }
 
   componentDidUpdate() {
@@ -103,26 +128,49 @@ export class Widget extends Component {
     for (let i = -1; i < 2; i++) {
       const current = moment([year, month, 1]).add(i, 'month');
       let style = {};
-      if (i !== 0) {
-        style = {
-          position: 'absolute',
-          top: 0,
-        }
+      let monthOffset = 0;
+      if (i === -1) {
+        monthOffset = -1;
+      }
+      if (i === 1) {
+        monthOffset = 1;
       }
       list.push(
         <Month month={current.month()} year={current.year()} date={date}
           day={day} selectedDay={selectedDay} selectedMonth={selectedMonth} selectedYear={selectedYear}
           changeDay={(...args) => this.changeDay(...args)}
           key={i}
-          style={{...style, zIndex: 2-Math.abs(i)}}/>
+          style={{...style, zIndex: 2-Math.abs(i)}}
+          monthOffset={monthOffset}/>
       );
     }
     return list;
   }
 
+  getAmountOfRows({ month, year }) {
+    const DAYS_IN_WEEK = 7;
+    const daysInMonth = moment([year, month, 1]).daysInMonth();
+    let startDay = moment([year, month, 1]).day();;
+    const numRows = Math.ceil((daysInMonth + startDay) / DAYS_IN_WEEK);
+    return numRows;
+  }
+
   render() {
-    const { month, year } = this.state;
+    const { month, year, animationDirection } = this.state;
     const monthList = this.createMonths();
+    let monthAnimationStyle = {};
+    if (animationDirection !== 0) {
+      const DAY_HEIGHT = 45;
+      const refDate = moment([ year, month, 1 ]).subtract(animationDirection, 'months');
+      const numRows = this.getAmountOfRows({ month, year });
+      const numNextRows = this.getAmountOfRows({ month: refDate.month(), year: refDate.year() });
+      console.log('refDate', refDate.format('DD MMM YYYY'), numNextRows);
+
+      monthAnimationStyle = {
+        transform: `translateY(${DAY_HEIGHT * numRows * animationDirection}px)`,
+        height: `${DAY_HEIGHT * numNextRows}px`,
+      };
+    }
     return (
       <div className="date-picker">
         <DateField onChange={value => this.onChangeField(value)} />
@@ -137,7 +185,9 @@ export class Widget extends Component {
             {this.createDayLabels()}
           </div>
           <div className="widget-body" ref="body">
-            {monthList}
+            <div className="widget-months" style={monthAnimationStyle}>
+              {monthList}
+            </div>
           </div>
         </div>
       </div>

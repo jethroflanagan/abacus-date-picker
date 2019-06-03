@@ -5,7 +5,7 @@
   $color-selected: $color-focus;
   $color-hover: $color-focus;
   $color-outside: #ddd;
-
+  // background: #fff;
   display: flex;
   // grid-template-columns: repeat(7, 1fr);
   // grid-column-start: div 3;
@@ -16,7 +16,9 @@
   width: 100%;
   position: relative;
   flex-wrap: wrap;
-
+  &--animate {
+    transition: transform 2s;
+  }
   .day-container {
     display: flex;
     justify-content: center;
